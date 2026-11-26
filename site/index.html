@@ -15,18 +15,19 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
 .monthly,.trades{margin-top:12px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:14px}.table-wrap{overflow:auto;overscroll-behavior-x:none;scrollbar-width:thin}table{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px;white-space:nowrap;text-align:center}th{font-weight:500;font-size:12px;color:#6781a5;padding:8px 10px}td{padding:7px 10px;border-radius:7px;background:#f0f6ff;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-weight:600}td:first-child{color:var(--blue)}.monthly table{min-width:1050px;table-layout:fixed}.monthly th:first-child,.monthly td:first-child{position:sticky;left:0;background:#eff6ff;z-index:1}.trades h3{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 9px 4px}.trades .table-wrap{max-height:270px}.trades table{min-width:790px;border-spacing:0}.trades th{position:sticky;top:0;background:#f0f6ff;z-index:1;padding:10px 14px}.trades td{font-weight:400;background:transparent;border-radius:0;border-bottom:1px solid #e9f0fb;padding:10px 14px}.trades td:first-child{color:var(--ink)}.empty{padding:70px 20px;text-align:center;font-size:14px;color:#7891ad}.notice{font-size:14px;line-height:1.7;padding:24px;text-align:center}.error{color:#a63d25}.loading{opacity:.65}
 .chart svg.with-drawdown{height:510px}
 .topline{flex-wrap:nowrap}.topline .status{flex:1;min-width:0;text-align:left}.contact-button{border:1px solid var(--blue);border-radius:9px;background:white;color:var(--blue);padding:7px 12px;font-size:14px;white-space:nowrap}.contact-button:hover{background:#e8f2ff}
-.status-updated,.status-refresh{white-space:nowrap}.status-countdown{display:inline-block;width:3ch;text-align:right;font-variant-numeric:tabular-nums}#contact-open{flex-shrink:0}
+.status-updated,.status-timezone{white-space:nowrap}.status-countdown{display:inline-block;width:3ch;text-align:right;font-variant-numeric:tabular-nums}#contact-open{flex-shrink:0}
+.refresh-status{position:fixed;right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));z-index:4;padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:#f8fbfff5;color:#6785a7;font-size:12px;line-height:18px;white-space:nowrap;pointer-events:none}main{padding-bottom:64px}
 #contact-open{visibility:hidden;opacity:0;pointer-events:none}#contact-open.scroll-visible{visibility:visible;opacity:1;pointer-events:auto}
 .contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:flex-end;margin-bottom:8px}.contact-dialog img{display:block;width:100%;height:auto}
 @media(min-width:1600px){.chart svg{height:430px}.chart svg.with-drawdown{height:612px}}
 @media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 3px;font-size:12px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
 @media(max-width:700px){.chart svg.with-drawdown{height:auto}}
-@media(max-width:700px){.status{line-height:18px;min-height:36px}.status-updated,.status-refresh{display:block;min-height:18px}}
+@media(max-width:700px){.status{line-height:18px;min-height:36px}.status-updated,.status-timezone{display:block;min-height:18px}main{padding-bottom:64px}}
 </style>
 </head>
 <body>
 <header class="toolbar">
- <div class="topline"><span class="status" id="status" role="status"><span class="status-updated"></span> <span class="status-refresh">正在读取业绩…</span></span><button type="button" class="contact-button" id="contact-open" aria-haspopup="dialog" aria-controls="contact-dialog" aria-expanded="false">联系我</button></div>
+ <div class="topline"><span class="status" id="status" role="status"><span class="status-updated">数据截至 —</span> <span class="status-timezone">（北京时间）</span></span><button type="button" class="contact-button" id="contact-open" aria-haspopup="dialog" aria-controls="contact-dialog" aria-expanded="false">联系我</button></div>
  <div class="controls">
   <nav class="strategies" aria-label="策略"><a href="#all-pro" aria-current="location">全天候2.0</a><a href="#all">全天候1.0</a><a href="#atlas">ATLAS</a></nav>
   <div class="ranges" role="group" aria-label="业绩时间范围">
@@ -39,9 +40,10 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
  <img src="assets/wechat-contact.jpg" alt="王仁东的微信二维码，扫码添加好友" width="888" height="1140">
 </dialog>
 <main id="content" aria-busy="true"><div class="notice">正在加载净值曲线、月收益和最近成交…</div></main>
+<div class="refresh-status" id="refresh-status" role="status">正在读取业绩…</div>
 
 <script>
-const content = document.getElementById('content'), status = document.getElementById('status');
+const content = document.getElementById('content'), status = document.getElementById('status'), refreshStatus = document.getElementById('refresh-status');
 const toolbar = document.querySelector('.toolbar');
 const contactDialog = document.getElementById('contact-dialog'), contactOpen = document.getElementById('contact-open');
 contactOpen.addEventListener('click',()=>{contactDialog.showModal();contactOpen.setAttribute('aria-expanded','true');});
@@ -73,7 +75,7 @@ function chart(strategy) {
  const days=(ms(points.at(-1).date)-ms(points[0].date))/86400000;
  const launchDays=period==='since_launch'?new Set(points.filter(p=>p.date>=strategy.launch_date).map(p=>p.date)).size:2;
  const annual=days>0&&launchDays>1?(Math.pow(last/navs[0],365.25/days)-1)*100:null;
- const width=innerWidth<=700?640:1600,height=innerWidth<=700?340:460,left=innerWidth<=700?88:70,right=24,top=25,bottom=45;
+ const width=innerWidth<=700?640:1600,height=innerWidth<=700?340:460,left=innerWidth<=700?88:70,right=72,top=25,bottom=45;
  const low=Math.min(...navs), high=Math.max(...navs), spread=Math.max(high-low,.002);
  const min=Math.max(0,low-spread*.13),max=high+spread*.13;
  const x=i=>left+(points.length===1?(width-left-right)/2:i*(width-left-right)/(points.length-1));
@@ -103,7 +105,7 @@ function chart(strategy) {
  <path d="${line} L${lastX},${baseline} L${x(0)},${baseline} Z" fill="url(#fill-${strategy.view})"/>
  <path d="${line}" fill="none" stroke="#0066df" stroke-width="2.6" stroke-linejoin="round"/>
  <circle cx="${lastX}" cy="${lastY}" r="4.5" fill="#0066df" stroke="white" stroke-width="2"/>
- ${launchX==null?'':`<line class="launch-marker" x1="${launchX}" x2="${launchX}" y1="${top}" y2="${height-bottom}" stroke="#eb0029" stroke-width="1.5" stroke-dasharray="6 5"><title>上线日期 ${date(strategy.launch_date)}</title></line><text class="launch-marker-label" x="${launchX+(launchX>width/2?-6:6)}" y="${top-10}" text-anchor="${launchX>width/2?'end':'start'}" fill="#eb0029">上线 ${date(strategy.launch_date)}</text>`}
+ ${launchX==null?'':`<line class="launch-marker" x1="${launchX}" x2="${launchX}" y1="${top}" y2="${height-bottom}" stroke="#eb0029" stroke-width="1.5" stroke-dasharray="6 5"><title>上线日期 ${date(strategy.launch_date)}</title></line><text class="launch-marker-label" x="${launchX}" y="${height-bottom+font}" text-anchor="middle" fill="#eb0029">上线 ${date(strategy.launch_date)}</text>`}
  ${labels}<text x="${left}" y="${height-12}">${date(points[0].date)}</text><text x="${width-right}" y="${height-12}" text-anchor="end">${date(points.at(-1).date)}</text>
  <g class="drawdown-panel" transform="translate(0 ${height+ddGap})" role="group" aria-label="相对所选区间内此前最高净值的回撤">
  <title>当前净值 ÷ 所选区间内截至当前的最高净值 − 1；曲线最低点与顶部最大回撤一致</title>
@@ -149,7 +151,8 @@ function showPeriod() {
  if(next!==snapshot){render(payload);snapshot=next;}
 }
 function updateStatus(message='') {
- status.innerHTML=`<span class="status-updated">${updated?`数据截至 ${escape(updated)}`:''}</span> <span class="status-refresh">${message||`（北京时间） · <span class="status-countdown">${remaining}</span> 秒后检查更新`}</span>`;
+ status.innerHTML=`<span class="status-updated">数据截至 ${updated?escape(updated):'—'}</span> <span class="status-timezone">（北京时间）</span>`;
+ refreshStatus.innerHTML=message||`<span class="status-countdown">${remaining}</span> 秒后检查更新`;
 }
 async function refresh() {
  if(controller)controller.abort();
