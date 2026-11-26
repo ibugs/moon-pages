@@ -15,7 +15,7 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
 .monthly,.trades{margin-top:12px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:14px}.table-wrap{overflow:auto;overscroll-behavior-x:none;scrollbar-width:thin}table{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px;white-space:nowrap;text-align:center}th{font-weight:500;font-size:12px;color:#6781a5;padding:8px 10px}td{padding:7px 10px;border-radius:7px;background:#f0f6ff;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-weight:600}td:first-child{color:var(--blue)}.monthly table{min-width:1050px;table-layout:fixed}.monthly th:first-child,.monthly td:first-child{position:sticky;left:0;background:#eff6ff;z-index:1}.trades h3{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 9px 4px}.trades .table-wrap{max-height:270px}.trades table{min-width:790px;border-spacing:0}.trades th{position:sticky;top:0;background:#f0f6ff;z-index:1;padding:10px 14px}.trades td{font-weight:400;background:transparent;border-radius:0;border-bottom:1px solid #e9f0fb;padding:10px 14px}.trades td:first-child{color:var(--ink)}.empty{padding:70px 20px;text-align:center;font-size:14px;color:#7891ad}.notice{font-size:14px;line-height:1.7;padding:24px;text-align:center}.error{color:#a63d25}.loading{opacity:.65}
 .chart svg.with-drawdown{height:510px}
 .topline{flex-wrap:nowrap}.topline .status{flex:1;min-width:0;text-align:left}.contact-button{border:1px solid var(--blue);border-radius:9px;background:white;color:var(--blue);padding:7px 12px;font-size:14px;white-space:nowrap}.contact-button:hover{background:#e8f2ff}
-.contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.contact-heading h2{font-size:18px}.contact-dialog img{display:block;width:100%;height:auto}.contact-dialog p{font-size:13px;line-height:1.6;margin:10px 0}.contact-download{color:var(--blue);font-size:14px}
+.contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:flex-end;margin-bottom:8px}.contact-dialog img{display:block;width:100%;height:auto}
 @media(min-width:1600px){.chart svg{height:430px}.chart svg.with-drawdown{height:612px}}
 @media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 3px;font-size:12px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
 @media(max-width:700px){.chart svg.with-drawdown{height:auto}}
@@ -31,11 +31,9 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
   </div>
  </div>
 </header>
-<dialog class="contact-dialog" id="contact-dialog" aria-labelledby="contact-title">
- <div class="contact-heading"><h2 id="contact-title">微信联系我</h2><button type="button" class="contact-button" id="contact-close" autofocus>关闭</button></div>
+<dialog class="contact-dialog" id="contact-dialog" aria-label="微信联系二维码">
+ <div class="contact-heading"><button type="button" class="contact-button" id="contact-close" autofocus>关闭</button></div>
  <img src="assets/wechat-contact.jpg" alt="王仁东的微信二维码，扫码添加好友" width="888" height="1140">
- <p>使用微信扫码添加好友。手机可保存图片后，在微信扫一扫中从相册识别。</p>
- <a class="contact-download" href="assets/wechat-contact.jpg" download="微信联系二维码.jpg">保存二维码</a>
 </dialog>
 <main id="content" aria-busy="true"><div class="notice">正在加载净值曲线、月收益和最近成交…</div></main>
 
