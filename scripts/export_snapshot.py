@@ -31,7 +31,7 @@ def public_payload(payload, risk_metrics):
             trades = [
                 {field: trade.get(field) for field in
                  ("ts", "symbol", "direction", "offset", "trade_price", "traded", "close_pnl")}
-                for trade in strategy["recent_trades"]
+                for trade in strategy["recent_trades"][:3]
             ]
         strategies.append({
             "view": strategy["view"],
