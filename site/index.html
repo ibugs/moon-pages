@@ -56,7 +56,7 @@ function updateToolbarOffset() {
 }
 new ResizeObserver(updateToolbarOffset).observe(toolbar);
 updateToolbarOffset();
-let period = '3y', serial = 0, controller, snapshot = '', remaining = 60, updated = '', data = null;
+let period = '3y', serial = 0, controller, snapshot = '', remaining = 180, updated = '', data = null;
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const date = value => value ? `${value.slice(0,4)}-${value.slice(4,6)}-${value.slice(6,8)}` : '—';
 const number = (value, digits=2) => Number(value).toLocaleString('zh-CN',{minimumFractionDigits:digits,maximumFractionDigits:digits});
@@ -161,10 +161,10 @@ async function refresh() {
   const nextData=await response.json();if(request!==serial)return;
   if(nextData.schema_version!==1||!nextData.periods?.[period]?.strategies?.length)throw new Error('数据格式不正确');
   data=nextData;showPeriod();
-  updated=data.generated_at.slice(0,19).replace('T',' ');remaining=60;updateStatus();
+  updated=data.generated_at.slice(0,19).replace('T',' ');remaining=180;updateStatus();
  } catch(error) {
   if(request===serial&&error.name!=='AbortError'){
-   remaining=60;status.textContent=updated?`数据截至 ${updated}（北京时间） · 检查更新失败，60 秒后重试`:'读取失败，60 秒后重试';
+   remaining=180;status.textContent=updated?`数据截至 ${updated}（北京时间） · 检查更新失败，180 秒后重试`:'读取失败，180 秒后重试';
    if(!snapshot)content.innerHTML='<div class="notice error">暂时无法读取业绩，请稍后重试。</div>';
   }
  } finally{if(request===serial){content.setAttribute('aria-busy','false');controller=null;}}
