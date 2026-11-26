@@ -9,7 +9,13 @@ GitHub Pages 纯静态页面，沿用现有 MOON 页面的布局和统计口径�
 
 ## 数据更新
 
-生产服务器复用现有 `dashboard_server.py`、`moon_dashboard.py` 中的统计函数，导出展示字段。每五分钟更新一次 JSON、推送 GitHub，随后由 Actions 发布 `site/`。页面每60秒检查新数据。实际可见时间包括发布和缓存延迟。
+生产服务器复用现有 `dashboard_server.py`、`moon_dashboard.py` 中的统计函数，导出展示字段。仅在以下北京时间窗口每五分钟更新 JSON、推送 GitHub，随后由 Actions 发布 `site/`：
+
+- 周一至周五 08:50–15:20。
+- 周一至周五 20:50–次日02:30，包含周六凌晨，不含周一凌晨。
+- 包含各窗口的起止时刻；其余时段不导出、不推送，不补发停机期间错过的任务。
+
+页面每60秒检查已发布的数据。实际可见时间包括发布和缓存延迟。
 
 导出失败时保留上一份 JSON；不会推送不完整的数据。导出脚本不会修改原网站、登录数据库或交易数据。发布文件不含账户编号、内部订单号、访问凭据或原始服务器配置。
 
@@ -29,7 +35,7 @@ bash scripts/publish_snapshot.sh
 
 推送使用服务器已有的 GitHub SSH 身份验证，不在仓库保存密钥。
 
-`deploy/` 中提供独立的用户级 systemd 服务和定时器，默认仓库位于 `~/project/moon-pages`，每五分钟运行。可用 `systemctl --user status moon-pages-export.timer` 查看任务状态；导出工具复用生产服务器的 tianqin 环境。
+`deploy/` 中提供独立的用户级 systemd 服务和定时器，默认仓库位于 `~/project/moon-pages`，仅在上述窗口每五分钟运行；发布脚本也会检查当前时间，窗口外直接跳过。可用 `systemctl --user status moon-pages-export.timer` 查看任务状态；导出工具复用生产服务器的 tianqin 环境。
 
 ## Pages 设置
 
