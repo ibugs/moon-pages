@@ -64,6 +64,25 @@ class SnapshotTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             export.public_payload(payload, lambda curve: {"sharpe": None})
 
+    def test_dzi_is_excluded_and_launch_dates_are_public(self):
+        payload = source_payload()
+        hidden = dict(copy.deepcopy(payload["strategies"][0]), view="dzi", title="DZI")
+        payload["strategies"].insert(2, hidden)
+        result = export.public_payload(payload, lambda curve: {"sharpe": 1.25})
+        self.assertEqual([s["view"] for s in result["strategies"]], ["all-pro", "all", "atlas"])
+        self.assertEqual([s["launch_date"] for s in result["strategies"]],
+                         ["20261126", "20250101", "20260927"])
+        self.assertNotIn('"dzi"', json.dumps(result))
+
+    def test_launch_period_can_wait_for_first_available_record(self):
+        payload = source_payload()
+        payload["period"] = "since_launch"
+        payload["strategies"][0].update(
+            equity_curve=[], monthly_returns=[], annual_returns=[], start_date=None, end_date=None)
+        result = export.public_payload(payload, lambda curve: {"sharpe": 1.25})
+        self.assertEqual(result["strategies"][0]["equity_curve"], [])
+        self.assertIsNone(result["strategies"][0]["risk_metrics"]["sharpe"])
+
     def test_invalid_numeric_export_keeps_previous_snapshot(self):
         with tempfile.TemporaryDirectory() as directory:
             output_dir = Path(directory)

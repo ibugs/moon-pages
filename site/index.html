@@ -14,26 +14,38 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
 .chart{background:linear-gradient(180deg,#edf5ff,#f9fcff);border:1px solid var(--line);border-radius:15px;overflow:hidden;padding:16px 16px 4px}.metrics{display:flex;justify-content:flex-start;gap:12px;flex-wrap:nowrap;min-height:25px;font-size:14px;color:var(--blue)}.metrics>span{white-space:nowrap}.metrics strong{font:600 16px Menlo,Consolas,monospace;margin-left:7px}.chart svg{display:block;width:100%;height:360px}.up{color:var(--up)}.down{color:var(--down)}.number{font-family:Menlo,Consolas,"Liberation Mono",monospace;font-variant-numeric:tabular-nums}
 .monthly,.trades{margin-top:12px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:14px}.table-wrap{overflow:auto;overscroll-behavior-x:none;scrollbar-width:thin}table{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px;white-space:nowrap;text-align:center}th{font-weight:500;font-size:12px;color:#6781a5;padding:8px 10px}td{padding:7px 10px;border-radius:7px;background:#f0f6ff;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-weight:600}td:first-child{color:var(--blue)}.monthly table{min-width:1050px;table-layout:fixed}.monthly th:first-child,.monthly td:first-child{position:sticky;left:0;background:#eff6ff;z-index:1}.trades h3{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 9px 4px}.trades .table-wrap{max-height:270px}.trades table{min-width:790px;border-spacing:0}.trades th{position:sticky;top:0;background:#f0f6ff;z-index:1;padding:10px 14px}.trades td{font-weight:400;background:transparent;border-radius:0;border-bottom:1px solid #e9f0fb;padding:10px 14px}.trades td:first-child{color:var(--ink)}.empty{padding:70px 20px;text-align:center;font-size:14px;color:#7891ad}.notice{font-size:14px;line-height:1.7;padding:24px;text-align:center}.error{color:#a63d25}.loading{opacity:.65}
 .chart svg.with-drawdown{height:510px}
+.topline{flex-wrap:nowrap}.topline .status{flex:1;min-width:0;text-align:left}.contact-button{border:1px solid var(--blue);border-radius:9px;background:white;color:var(--blue);padding:7px 12px;font-size:14px;white-space:nowrap}.contact-button:hover{background:#e8f2ff}
+.contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.contact-heading h2{font-size:18px}.contact-dialog img{display:block;width:100%;height:auto}.contact-dialog p{font-size:13px;line-height:1.6;margin:10px 0}.contact-download{color:var(--blue);font-size:14px}
 @media(min-width:1600px){.chart svg{height:430px}.chart svg.with-drawdown{height:612px}}
-@media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 10px;font-size:14px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
+@media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 3px;font-size:12px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
 @media(max-width:700px){.chart svg.with-drawdown{height:auto}}
 </style>
 </head>
 <body>
 <header class="toolbar">
- <div class="topline"><span class="status" id="status" role="status">正在读取业绩…</span></div>
+ <div class="topline"><span class="status" id="status" role="status">正在读取业绩…</span><button type="button" class="contact-button" id="contact-open" aria-haspopup="dialog" aria-controls="contact-dialog" aria-expanded="false">联系我</button></div>
  <div class="controls">
-  <nav class="strategies" aria-label="策略"><a href="#all-pro" aria-current="location">全天候2.0</a><a href="#all">全天候1.0</a><a href="#dzi">DZI</a><a href="#atlas">ATLAS</a></nav>
+  <nav class="strategies" aria-label="策略"><a href="#all-pro" aria-current="location">全天候2.0</a><a href="#all">全天候1.0</a><a href="#atlas">ATLAS</a></nav>
   <div class="ranges" role="group" aria-label="业绩时间范围">
-   <button class="range" data-period="10y" aria-pressed="false">最近10年</button><button class="range" data-period="5y" aria-pressed="false">最近5年</button><button class="range" data-period="3y" aria-pressed="true">最近3年</button><button class="range" data-period="1y" aria-pressed="false">最近1年</button><button class="range" data-period="ytd" aria-pressed="false">今年</button>
+   <button class="range" data-period="10y" aria-pressed="false">最近10年</button><button class="range" data-period="5y" aria-pressed="false">最近5年</button><button class="range" data-period="3y" aria-pressed="true">最近3年</button><button class="range" data-period="1y" aria-pressed="false">最近1年</button><button class="range" data-period="ytd" aria-pressed="false">今年</button><button class="range" data-period="since_launch" aria-pressed="false" title="按各策略上线日期起算，以上线前一条净值为基准，包含上线当日收益">上线后</button>
   </div>
  </div>
 </header>
+<dialog class="contact-dialog" id="contact-dialog" aria-labelledby="contact-title">
+ <div class="contact-heading"><h2 id="contact-title">微信联系我</h2><button type="button" class="contact-button" id="contact-close" autofocus>关闭</button></div>
+ <img src="assets/wechat-contact.jpg" alt="王仁东的微信二维码，扫码添加好友" width="888" height="1140">
+ <p>使用微信扫码添加好友。手机可保存图片后，在微信扫一扫中从相册识别。</p>
+ <a class="contact-download" href="assets/wechat-contact.jpg" download="微信联系二维码.jpg">保存二维码</a>
+</dialog>
 <main id="content" aria-busy="true"><div class="notice">正在加载净值曲线、月收益和最近成交…</div></main>
 
 <script>
 const content = document.getElementById('content'), status = document.getElementById('status');
 const toolbar = document.querySelector('.toolbar');
+const contactDialog = document.getElementById('contact-dialog'), contactOpen = document.getElementById('contact-open');
+contactOpen.addEventListener('click',()=>{contactDialog.showModal();contactOpen.setAttribute('aria-expanded','true');});
+document.getElementById('contact-close').addEventListener('click',()=>contactDialog.close());
+contactDialog.addEventListener('close',()=>contactOpen.setAttribute('aria-expanded','false'));
 function updateToolbarOffset() {
  document.documentElement.style.setProperty('--toolbar-height', `${toolbar.getBoundingClientRect().height}px`);
 }
@@ -52,7 +64,8 @@ function chart(strategy) {
  const drawdown=Math.min(0,...drawdowns);
  const ms = day => Date.UTC(+day.slice(0,4),+day.slice(4,6)-1,+day.slice(6,8));
  const days=(ms(points.at(-1).date)-ms(points[0].date))/86400000;
- const annual=days>0?(Math.pow(last/navs[0],365.25/days)-1)*100:null;
+ const launchDays=period==='since_launch'?new Set(points.filter(p=>p.date>=strategy.launch_date).map(p=>p.date)).size:2;
+ const annual=days>0&&launchDays>1?(Math.pow(last/navs[0],365.25/days)-1)*100:null;
  const width=innerWidth<=700?640:1600,height=innerWidth<=700?340:460,left=innerWidth<=700?88:70,right=24,top=25,bottom=45;
  const low=Math.min(...navs), high=Math.max(...navs), spread=Math.max(high-low,.002);
  const min=Math.max(0,low-spread*.13),max=high+spread*.13;
@@ -101,7 +114,8 @@ function trades(strategy) {
 }
 function render(payload) {
  const positions=new Map([...document.querySelectorAll('.table-wrap')].map(e=>[e.id,[e.scrollLeft,e.scrollTop]]));
- content.innerHTML=payload.strategies.map(s=>`<section class="strategy" id="${s.view}"><div class="strategy-heading"><h2>${escape(s.title)}</h2><span class="date">${date(s.end_date)}</span></div><div class="chart">${chart(s)}</div>${monthly(s)}${trades(s)}</section>`).join('');
+ const strategies=payload.strategies.filter(s=>['all-pro','all','atlas'].includes(s.view));
+ content.innerHTML=strategies.map(s=>`<section class="strategy" id="${s.view}"><div class="strategy-heading"><h2>${escape(s.title)}</h2><span class="date" title="截至 ${date(s.end_date)}">${period==='since_launch'?'上线 '+date(s.launch_date):date(s.end_date)}</span></div><div class="chart">${chart(s)}</div>${monthly(s)}${trades(s)}</section>`).join('');
  for (const [id,[left,top]] of positions){const e=document.getElementById(id);if(e){e.scrollLeft=left;e.scrollTop=top;}}
  if(!snapshot && location.hash) {
   const anchor = document.querySelector('.strategies a[aria-current="location"]');
@@ -111,6 +125,7 @@ function render(payload) {
 function showPeriod() {
  if(!data)return;
  const payload=data.periods[period];
+ if(!payload){content.innerHTML='<div class="notice">该区间数据正在更新，请稍后刷新。</div>';return;}
  const next=JSON.stringify(payload.strategies);
  if(next!==snapshot){render(payload);snapshot=next;}
 }
@@ -139,7 +154,7 @@ async function refresh() {
  } finally{if(request===serial){content.setAttribute('aria-busy','false');controller=null;}}
 }
 function updateStrategyTabs() {
- const selected = ['#all-pro','#all','#dzi','#atlas'].includes(location.hash) ? location.hash : '#all-pro';
+ const selected = ['#all-pro','#all','#atlas'].includes(location.hash) ? location.hash : '#all-pro';
  document.querySelectorAll('.strategies a').forEach(link => {
   if(link.getAttribute('href')===selected)link.setAttribute('aria-current','location');
   else link.removeAttribute('aria-current');
