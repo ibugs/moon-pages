@@ -11,7 +11,7 @@ import sys
 PERIODS = ("10y", "5y", "3y", "1y", "ytd", "since_launch")
 VIEWS = ("all-pro", "all", "atlas")
 SOURCE_VIEWS = ("all-pro", "all", "mas", "dzi", "atlas")
-LAUNCH_DATES = {"all-pro": "20261126", "all": "20250101", "atlas": "20260927"}
+LAUNCH_DATES = {"all-pro": "20261126", "all": "20260101", "atlas": "20260927"}
 BEIJING = datetime.timezone(datetime.timedelta(hours=8))
 
 

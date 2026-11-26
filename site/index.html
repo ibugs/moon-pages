@@ -15,6 +15,7 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
 .monthly,.trades{margin-top:12px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:14px}.table-wrap{overflow:auto;overscroll-behavior-x:none;scrollbar-width:thin}table{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px;white-space:nowrap;text-align:center}th{font-weight:500;font-size:12px;color:#6781a5;padding:8px 10px}td{padding:7px 10px;border-radius:7px;background:#f0f6ff;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-weight:600}td:first-child{color:var(--blue)}.monthly table{min-width:1050px;table-layout:fixed}.monthly th:first-child,.monthly td:first-child{position:sticky;left:0;background:#eff6ff;z-index:1}.trades h3{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 9px 4px}.trades .table-wrap{max-height:270px}.trades table{min-width:790px;border-spacing:0}.trades th{position:sticky;top:0;background:#f0f6ff;z-index:1;padding:10px 14px}.trades td{font-weight:400;background:transparent;border-radius:0;border-bottom:1px solid #e9f0fb;padding:10px 14px}.trades td:first-child{color:var(--ink)}.empty{padding:70px 20px;text-align:center;font-size:14px;color:#7891ad}.notice{font-size:14px;line-height:1.7;padding:24px;text-align:center}.error{color:#a63d25}.loading{opacity:.65}
 .chart svg.with-drawdown{height:510px}
 .topline{flex-wrap:nowrap}.topline .status{flex:1;min-width:0;text-align:left}.contact-button{border:1px solid var(--blue);border-radius:9px;background:white;color:var(--blue);padding:7px 12px;font-size:14px;white-space:nowrap}.contact-button:hover{background:#e8f2ff}
+#contact-open{visibility:hidden;opacity:0;pointer-events:none}#contact-open.scroll-visible{visibility:visible;opacity:1;pointer-events:auto}
 .contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:flex-end;margin-bottom:8px}.contact-dialog img{display:block;width:100%;height:auto}
 @media(min-width:1600px){.chart svg{height:430px}.chart svg.with-drawdown{height:612px}}
 @media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 3px;font-size:12px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
@@ -44,6 +45,14 @@ const contactDialog = document.getElementById('contact-dialog'), contactOpen = d
 contactOpen.addEventListener('click',()=>{contactDialog.showModal();contactOpen.setAttribute('aria-expanded','true');});
 document.getElementById('contact-close').addEventListener('click',()=>contactDialog.close());
 contactDialog.addEventListener('close',()=>contactOpen.setAttribute('aria-expanded','false'));
+let contactScrollY=window.scrollY, contactHideTimer;
+window.addEventListener('scroll',()=>{
+ const current=window.scrollY;
+ if(current===contactScrollY)return;
+ contactScrollY=current;contactOpen.classList.add('scroll-visible');
+ clearTimeout(contactHideTimer);
+ contactHideTimer=setTimeout(()=>contactOpen.classList.remove('scroll-visible'),1000);
+},{passive:true});
 function updateToolbarOffset() {
  document.documentElement.style.setProperty('--toolbar-height', `${toolbar.getBoundingClientRect().height}px`);
 }
@@ -68,6 +77,15 @@ function chart(strategy) {
  const low=Math.min(...navs), high=Math.max(...navs), spread=Math.max(high-low,.002);
  const min=Math.max(0,low-spread*.13),max=high+spread*.13;
  const x=i=>left+(points.length===1?(width-left-right)/2:i*(width-left-right)/(points.length-1));
+ let launchX=null;
+ if(strategy.launch_date&&strategy.launch_date>=points[0].date&&strategy.launch_date<=points.at(-1).date){
+  const index=points.findIndex(p=>p.date>=strategy.launch_date);
+  launchX=x(index);
+  if(index>0&&points[index].date!==strategy.launch_date){
+   const ratio=(ms(strategy.launch_date)-ms(points[index-1].date))/(ms(points[index].date)-ms(points[index-1].date));
+   launchX=x(index-1)+(x(index)-x(index-1))*ratio;
+  }
+ }
  const y=v=>top+(max-v)*(height-top-bottom)/(max-min);
  const line=navs.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(2)},${y(v).toFixed(2)}`).join(' ');
  const lastX=x(points.length-1),lastY=y(last),baseline=height-bottom;
@@ -85,11 +103,13 @@ function chart(strategy) {
  <path d="${line} L${lastX},${baseline} L${x(0)},${baseline} Z" fill="url(#fill-${strategy.view})"/>
  <path d="${line}" fill="none" stroke="#0066df" stroke-width="2.6" stroke-linejoin="round"/>
  <circle cx="${lastX}" cy="${lastY}" r="4.5" fill="#0066df" stroke="white" stroke-width="2"/>
+ ${launchX==null?'':`<line class="launch-marker" x1="${launchX}" x2="${launchX}" y1="${top}" y2="${height-bottom}" stroke="#eb0029" stroke-width="1.5" stroke-dasharray="6 5"><title>上线日期 ${date(strategy.launch_date)}</title></line><text class="launch-marker-label" x="${launchX+(launchX>width/2?-6:6)}" y="${top-10}" text-anchor="${launchX>width/2?'end':'start'}" fill="#eb0029">上线 ${date(strategy.launch_date)}</text>`}
  ${labels}<text x="${left}" y="${height-12}">${date(points[0].date)}</text><text x="${width-right}" y="${height-12}" text-anchor="end">${date(points.at(-1).date)}</text>
  <g class="drawdown-panel" transform="translate(0 ${height+ddGap})" role="group" aria-label="相对所选区间内此前最高净值的回撤">
  <title>当前净值 ÷ 所选区间内截至当前的最高净值 − 1；曲线最低点与顶部最大回撤一致</title>
  <text x="${left}" y="${ddTop-4}">区间回撤</text>
  ${ddGrid}
+ ${launchX==null?'':`<line class="launch-marker" x1="${launchX}" x2="${launchX}" y1="${ddTop}" y2="${ddHeight-bottom}" stroke="#eb0029" stroke-width="1.5" stroke-dasharray="6 5"><title>上线日期 ${date(strategy.launch_date)}</title></line>`}
  <path d="${ddLine} L${lastX},${ddY(0)} L${x(0)},${ddY(0)} Z" fill="#00852b" fill-opacity=".10"/>
  <line class="drawdown-threshold" x1="${left}" x2="${width-right}" y1="${ddY(-.1)}" y2="${ddY(-.1)}" stroke="#eb0029" stroke-width="1.5" stroke-dasharray="6 5" aria-label="最大回撤10%参考线"/>
  <text x="${width-right-4}" y="${ddY(-.1)-6}" text-anchor="end" fill="#eb0029">-10%</text>

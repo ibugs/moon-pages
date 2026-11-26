@@ -71,7 +71,7 @@ class SnapshotTests(unittest.TestCase):
         result = export.public_payload(payload, lambda curve: {"sharpe": 1.25})
         self.assertEqual([s["view"] for s in result["strategies"]], ["all-pro", "all", "atlas"])
         self.assertEqual([s["launch_date"] for s in result["strategies"]],
-                         ["20261126", "20250101", "20260927"])
+                         ["20261126", "20260101", "20260927"])
         self.assertNotIn('"dzi"', json.dumps(result))
 
     def test_launch_period_can_wait_for_first_available_record(self):
