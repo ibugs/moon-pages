@@ -1,0 +1,14 @@
+[Unit]
+Description=Export and publish MOON performance snapshot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/project/moon-pages
+Environment=MOON_DASHBOARD_DIR=%h/project/Dashboard_Server
+Environment=MOON_PYTHON=%h/miniconda3/envs/tianqin/bin/python
+Environment=GIT_TERMINAL_PROMPT=0
+Environment="GIT_SSH_COMMAND=/usr/bin/ssh -o BatchMode=yes -o ConnectTimeout=20"
+ExecStart=/bin/bash %h/project/moon-pages/scripts/publish_snapshot.sh
+TimeoutStartSec=240

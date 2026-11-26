@@ -1,0 +1,10 @@
+[Unit]
+Description=Publish MOON data every five minutes
+
+[Timer]
+OnCalendar=*-*-* *:0/5:00
+Persistent=true
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

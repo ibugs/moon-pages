@@ -29,6 +29,8 @@ bash scripts/publish_snapshot.sh
 
 推送使用服务器已有的 GitHub SSH 身份验证，不在仓库保存密钥。
 
+`deploy/` 中提供独立的用户级 systemd 服务和定时器，默认仓库位于 `~/project/moon-pages`，每五分钟运行。可用 `systemctl --user status moon-pages-export.timer` 查看任务状态；导出工具复用生产服务器的 tianqin 环境。
+
 ## Pages 设置
 
 仓库 Settings → Pages → Build and deployment → Source 选择 GitHub Actions。
