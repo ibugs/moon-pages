@@ -45,13 +45,11 @@ const contactDialog = document.getElementById('contact-dialog'), contactOpen = d
 contactOpen.addEventListener('click',()=>{contactDialog.showModal();contactOpen.setAttribute('aria-expanded','true');});
 document.getElementById('contact-close').addEventListener('click',()=>contactDialog.close());
 contactDialog.addEventListener('close',()=>contactOpen.setAttribute('aria-expanded','false'));
-let contactScrollY=window.scrollY, contactHideTimer;
+let contactScrollY=window.scrollY;
 window.addEventListener('scroll',()=>{
  const current=window.scrollY;
  if(current===contactScrollY)return;
  contactScrollY=current;contactOpen.classList.add('scroll-visible');
- clearTimeout(contactHideTimer);
- contactHideTimer=setTimeout(()=>contactOpen.classList.remove('scroll-visible'),1000);
 },{passive:true});
 function updateToolbarOffset() {
  document.documentElement.style.setProperty('--toolbar-height', `${toolbar.getBoundingClientRect().height}px`);
