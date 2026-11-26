@@ -15,16 +15,18 @@ main{max-width:1920px;margin:auto;padding:22px 24px 40px}.strategy{margin-bottom
 .monthly,.trades{margin-top:12px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:14px}.table-wrap{overflow:auto;overscroll-behavior-x:none;scrollbar-width:thin}table{border-collapse:separate;border-spacing:3px;width:100%;font-size:13px;white-space:nowrap;text-align:center}th{font-weight:500;font-size:12px;color:#6781a5;padding:8px 10px}td{padding:7px 10px;border-radius:7px;background:#f0f6ff;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-weight:600}td:first-child{color:var(--blue)}.monthly table{min-width:1050px;table-layout:fixed}.monthly th:first-child,.monthly td:first-child{position:sticky;left:0;background:#eff6ff;z-index:1}.trades h3{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 9px 4px}.trades .table-wrap{max-height:270px}.trades table{min-width:790px;border-spacing:0}.trades th{position:sticky;top:0;background:#f0f6ff;z-index:1;padding:10px 14px}.trades td{font-weight:400;background:transparent;border-radius:0;border-bottom:1px solid #e9f0fb;padding:10px 14px}.trades td:first-child{color:var(--ink)}.empty{padding:70px 20px;text-align:center;font-size:14px;color:#7891ad}.notice{font-size:14px;line-height:1.7;padding:24px;text-align:center}.error{color:#a63d25}.loading{opacity:.65}
 .chart svg.with-drawdown{height:510px}
 .topline{flex-wrap:nowrap}.topline .status{flex:1;min-width:0;text-align:left}.contact-button{border:1px solid var(--blue);border-radius:9px;background:white;color:var(--blue);padding:7px 12px;font-size:14px;white-space:nowrap}.contact-button:hover{background:#e8f2ff}
+.status-updated,.status-refresh{white-space:nowrap}.status-countdown{display:inline-block;width:3ch;text-align:right;font-variant-numeric:tabular-nums}#contact-open{flex-shrink:0}
 #contact-open{visibility:hidden;opacity:0;pointer-events:none}#contact-open.scroll-visible{visibility:visible;opacity:1;pointer-events:auto}
 .contact-dialog{width:360px;max-width:calc(100% - 32px);max-height:calc(100vh - 32px);padding:16px;border:1px solid var(--line);border-radius:18px;color:var(--ink);background:#fff;overflow:auto}.contact-dialog::backdrop{background:#19324d66}.contact-heading{display:flex;justify-content:flex-end;margin-bottom:8px}.contact-dialog img{display:block;width:100%;height:auto}
 @media(min-width:1600px){.chart svg{height:430px}.chart svg.with-drawdown{height:612px}}
 @media(max-width:700px){.toolbar{padding:14px 12px}.topline{gap:8px;margin-bottom:10px}.status{font-size:12px}.controls{gap:8px}.ranges{width:100%;justify-content:space-between;gap:2px}.range{padding:8px 3px;font-size:12px}.strategies a{padding:6px 10px}.strategy{padding:12px;margin-bottom:18px;border-radius:14px}main{padding:14px 10px 24px}.strategy-heading{margin-bottom:8px}h2{font-size:18px}.chart{padding:12px 4px 2px}.chart svg{height:250px}.metrics{display:grid;grid-template-columns:max-content max-content;padding:0 8px;gap:8px 12px;font-size:12px}.metrics strong{font-size:14px}.monthly,.trades{padding:7px}.monthly table{min-width:1000px}.trades .table-wrap{max-height:250px}.date{font-size:12px}.trade-date,.trade-time{display:block}}
 @media(max-width:700px){.chart svg.with-drawdown{height:auto}}
+@media(max-width:700px){.status{line-height:18px;min-height:36px}.status-updated,.status-refresh{display:block;min-height:18px}}
 </style>
 </head>
 <body>
 <header class="toolbar">
- <div class="topline"><span class="status" id="status" role="status">正在读取业绩…</span><button type="button" class="contact-button" id="contact-open" aria-haspopup="dialog" aria-controls="contact-dialog" aria-expanded="false">联系我</button></div>
+ <div class="topline"><span class="status" id="status" role="status"><span class="status-updated"></span> <span class="status-refresh">正在读取业绩…</span></span><button type="button" class="contact-button" id="contact-open" aria-haspopup="dialog" aria-controls="contact-dialog" aria-expanded="false">联系我</button></div>
  <div class="controls">
   <nav class="strategies" aria-label="策略"><a href="#all-pro" aria-current="location">全天候2.0</a><a href="#all">全天候1.0</a><a href="#atlas">ATLAS</a></nav>
   <div class="ranges" role="group" aria-label="业绩时间范围">
@@ -145,13 +147,13 @@ function showPeriod() {
  const next=JSON.stringify(payload.strategies);
  if(next!==snapshot){render(payload);snapshot=next;}
 }
-function updateStatus() {
- status.textContent=`数据截至 ${updated}（北京时间） · ${remaining} 秒后检查更新`;
+function updateStatus(message='') {
+ status.innerHTML=`<span class="status-updated">${updated?`数据截至 ${escape(updated)}`:''}</span> <span class="status-refresh">${message||`（北京时间） · <span class="status-countdown">${remaining}</span> 秒后检查更新`}</span>`;
 }
 async function refresh() {
  if(controller)controller.abort();
  controller=new AbortController();const request=++serial;
- content.setAttribute('aria-busy','true');status.textContent='正在读取最新数据…';
+ content.setAttribute('aria-busy','true');updateStatus('正在读取最新数据…');
  try {
   const url=new URL('data/moon.json',document.baseURI);
   url.searchParams.set('v',Math.floor(Date.now()/60000));
@@ -164,7 +166,7 @@ async function refresh() {
   updated=data.generated_at.slice(0,19).replace('T',' ');remaining=180;updateStatus();
  } catch(error) {
   if(request===serial&&error.name!=='AbortError'){
-   remaining=180;status.textContent=updated?`数据截至 ${updated}（北京时间） · 检查更新失败，180 秒后重试`:'读取失败，180 秒后重试';
+   remaining=180;updateStatus(`${updated?'检查更新失败':'读取失败'}，<span class="status-countdown">180</span> 秒后重试`);
    if(!snapshot)content.innerHTML='<div class="notice error">暂时无法读取业绩，请稍后重试。</div>';
   }
  } finally{if(request===serial){content.setAttribute('aria-busy','false');controller=null;}}
