@@ -44,7 +44,6 @@ class SnapshotTests(unittest.TestCase):
         self.assertNotIn("DEMO_INTERNAL_ID", serialized)
         self.assertNotIn("account_id", serialized)
         self.assertEqual(result["strategies"][0]["recent_trades"], [])
-        self.assertEqual(result["strategies"][1]["recent_trades"], [])
 
     def test_preserves_performance_and_trade_values(self):
         payload = source_payload()
@@ -54,7 +53,7 @@ class SnapshotTests(unittest.TestCase):
             self.assertEqual(original["monthly_returns"], public["monthly_returns"])
             self.assertEqual(original["annual_returns"], public["annual_returns"])
             self.assertEqual(public["risk_metrics"]["sharpe"], 1.25)
-        trade = result["strategies"][2]["recent_trades"][0]
+        trade = result["strategies"][1]["recent_trades"][0]
         self.assertEqual(trade["trade_price"], 10.5)
         self.assertEqual(trade["close_pnl"], -3.5)
 
@@ -64,14 +63,16 @@ class SnapshotTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             export.public_payload(payload, lambda curve: {"sharpe": None})
 
-    def test_dzi_is_excluded_and_launch_dates_are_public(self):
+    def test_hidden_strategies_are_excluded_and_launch_dates_are_public(self):
         payload = source_payload()
-        hidden = dict(copy.deepcopy(payload["strategies"][0]), view="dzi", title="DZI")
-        payload["strategies"].insert(2, hidden)
+        for view in ("all", "dzi"):
+            hidden = dict(copy.deepcopy(payload["strategies"][0]), view=view)
+            payload["strategies"].insert(1, hidden)
         result = export.public_payload(payload, lambda curve: {"sharpe": 1.25})
-        self.assertEqual([s["view"] for s in result["strategies"]], ["all-pro", "all", "atlas"])
+        self.assertEqual([s["view"] for s in result["strategies"]], ["all-pro", "atlas"])
         self.assertEqual([s["launch_date"] for s in result["strategies"]],
-                         ["20261126", "20260101", "20260927"])
+                         ["20261126", "20260927"])
+        self.assertNotIn('"all"', json.dumps(result))
         self.assertNotIn('"dzi"', json.dumps(result))
 
     def test_launch_period_can_wait_for_first_available_record(self):
