@@ -9,9 +9,9 @@ from pathlib import Path
 import sys
 
 PERIODS = ("10y", "5y", "3y", "1y", "ytd", "since_launch")
-VIEWS = ("all-pro", "dzi", "atlas")
+VIEWS = ("all-pro", "atlas")
 SOURCE_VIEWS = ("all-pro", "all", "mas", "dzi", "atlas")
-LAUNCH_DATES = {"all-pro": "20261126", "dzi": "20260721", "atlas": "20260927"}
+LAUNCH_DATES = {"all-pro": "20261126", "atlas": "20260927"}
 BEIJING = datetime.timezone(datetime.timedelta(hours=8))
 
 
@@ -31,7 +31,7 @@ def public_payload(payload, risk_metrics):
             trades = [
                 {field: trade.get(field) for field in
                  ("ts", "symbol", "direction", "offset", "trade_price", "traded", "close_pnl")}
-                for trade in strategy["recent_trades"][:3]
+                for trade in strategy["recent_trades"][:1]
             ]
         strategies.append({
             "view": strategy["view"],
